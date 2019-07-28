@@ -6,7 +6,10 @@ struct SAM
 		int to[26];
 		int len,link;
 	}t[2*maxn];
-	int sz,lst;
+	int sz,lst,len;
+	char s[maxn];
+	int cnt[maxn],top[maxn*2];
+	int cc[2*maxn],ans[2*maxn];
 	int newnode(int len)
 	{
 		mem(t[sz].to,0);
@@ -16,12 +19,15 @@ struct SAM
 	}
 	void init()
 	{
-		sz=0;
-		lst=0;
+		sz=lst=len=0;
 		newnode(0);
+		mem(cnt,0);
+		mem(top,0);
 	}
-	void add(int c)
+	void add(char w)
 	{
+	    s[++len]=w;
+	    int c=w-'a';
 		int p=lst;
 		int now=newnode(t[p].len+1);
 		while(p!=-1&&!t[p].to[c])
@@ -53,14 +59,46 @@ struct SAM
 		}
 		lst=now;
 	}
-	ll butongzichuanzongchang()
+	void topsort()
 	{
-		ll res=0;
-		for(int i=1;i<sz;++i)
-		{
-			ll tp=t[i].len-t[t[i].link].len;
-			res+=(t[i].len+(t[i].len-tp+1))*tp/2;
-		}
-		return res;
+	    for(int i=0;i<sz;++i)
+            ++cnt[t[i].len];
+        for(int i=0;i<=len;++i)
+            cnt[i]+=cnt[i-1];
+        for(int i=sz-1;~i;--i)
+            top[cnt[t[i].len]--]=i;
+        
+        for(int i=0;i<sz;++i)
+            ans[i]=t[i].len;
+	}
+	void run(char s[])//多串LCS
+	{
+	    mem(cc,0);
+	    int n=strlen(s);
+	    int p=1,l=0;
+	    for(int i=0;i<n;++i)
+        {
+            int c=s[i]-'a';
+            while(p!=-1&&!t[p].to[c])
+                p=t[p].link,l=t[p].len;
+            if(p==-1)
+                p=1,l=0;
+            else p=t[p].to[c],cc[p]=max(cc[p],++l);
+
+        }
+        for(int i=sz-1;~i;--i)
+        {
+            int x=top[i];
+            cc[t[x].link]=max(cc[t[x].link],cc[x]);
+        }
+        for(int i=0;i<sz;++i)
+            ans[i]=min(ans[i],cc[i]);
+	}
+	int res()
+	{
+	    int r=0;
+	    for(int i=0;i<sz;++i)
+            r=max(r,ans[i]);
+        return r;
 	}
 }sam;
