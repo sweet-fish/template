@@ -1,66 +1,18 @@
-struct edge
-{
-    int to,nxt;
-    ll v;
-}e[1000005];
-int tot=0;
-int head[500005];
-int fa[500005];
-int dep[500005];
-ll dis[400005];
-int jmp[500005][20];
+int a[100005];
+int st[100005][30];
+int len[100005];
 void init(int n)
 {
-    tot=0;
     for(int i=1;i<=n;++i)
-    {
-        dep[i]=0;
-        dis[i]=0;
-        head[i]=-1;
-        for(int j=0;j<20;++j)
-            jmp[i][j]=0;
-    }
+        len[i]=log(i)/log(2);
+    for(int i=1;i<=n;++i)
+        st[i][0]=a[i];
+    for(int j=1;(1<<j)<=n;++j)
+        for(int i=1;i+(1<<j)-1<=n;++i)
+            st[i][j]=max(st[i][j-1],st[i+(1<<(j-1))][j-1]);
 }
-void ae(int u,int v,ll w)
+int query(int l,int r)
 {
-    e[tot]={v,head[u],w};
-    head[u]=tot++;
-    e[tot]={u,head[v],w};
-    head[v]=tot++;
-}
-void dfs(int rt,ll d)
-{
-    jmp[rt][0]=fa[rt];
-    dis[rt]=dis[fa[rt]]+d;
-    for(int i=1;i<20;++i)
-        jmp[rt][i]=jmp[jmp[rt][i-1]][i-1];
-    for(int i=head[rt];~i;i=e[i].nxt)
-        if(e[i].to!=fa[rt])
-        {
-            int u=e[i].to;
-            fa[u]=rt;
-            dep[u]=dep[rt]+1;
-            dfs(u,e[i].v);
-        }
-}
-int lca(int u,int v)
-{
-    if(dep[u]>dep[v])
-        swap(u,v);
-    for(int i=19;~i;--i)
-        if(dep[u]<=dep[jmp[v][i]])
-            v=jmp[v][i];
-    if(u==v)
-        return v;
-    for(int i=19;~i;--i)
-        if(jmp[u][i]!=jmp[v][i])
-        {
-            u=jmp[u][i];
-            v=jmp[v][i];
-        }
-    return jmp[u][0];
-}
-int dist(int u,int v)
-{
-    return dis[u]+dis[v]-dis[fa]-dis[fa];
+    int k=len[r-l+1];
+    return max(st[l][k],st[r-(1<<k)+1][k]);
 }
