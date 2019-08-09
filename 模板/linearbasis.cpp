@@ -53,7 +53,7 @@ struct linearbasis
                 v^=tp[i];
         return v;
     }
-    linearbasis union(const linearbasis &t)const
+    linearbasis join(const linearbasis &t)const
     {
         linearbasis r;
         for(int i=0;i<64;++i)
