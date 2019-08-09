@@ -20,6 +20,18 @@ struct linearbasis
             }
         return 0;
     }
+    bool chk(ll v)
+    {
+        for(int i=60;~i;--i)
+            if(v&(1LL<<i))
+            {
+                if(base[i])
+                    v^=base[i];
+                else
+                    return 0;
+            }
+        return 1;
+    }
     void rebuild()
     {
         for(int i=64;~i;--i)
